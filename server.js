@@ -4,12 +4,9 @@ const axios = require('axios');
 const cors = require('cors');
 const app = express();
 
-// Configurar CORS
-app.use(cors({
-  origin: '*',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders: 'Content-Type,Authorization'
-}));
+// Configurar CORS para permitir cualquier origen
+app.use(cors());
+app.options('*', cors());  // Manejar solicitudes preflight
 
 // Aumentar el tamaño máximo del payload permitido
 app.use(express.json({ limit: '15mb' }));
