@@ -6,37 +6,41 @@ const app = express();
 
 // Configurar CORS
 app.use(cors({
-  origin: '*', // Permitir cualquier origen. Puedes ajustar esto a un dominio específico si lo necesitas.
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type,Authorization'
 }));
 
-app.use(express.json({limit: '5mb'}));
+// Aumentar el tamaño máximo del payload permitido
+app.use(express.json({ limit: '5mb' }));
 
 // Ruta para generar el reporte de accesibilidad
 app.post('/generate-accessibility-report', async (req, res) => {
   try {
-    const { details, image } = req.body;
+    const { details, imageBase64 } = req.body;
+
+    let analysisContent = `
+    Revisa el siguiente contenido de un diseño de Figma y proporciona un análisis detallado de la accesibilidad. Incluye los siguientes aspectos:
+    1. Identifica problemas de accesibilidad visual como contraste insuficiente, tamaño de fuente pequeño, y colores problemáticos. Ofrece sugerencias específicas para mejorarlos.
+    2. Evalúa la estructura de los componentes y asegúrate de que los elementos interactivos sean fácilmente navegables. Proporciona recomendaciones sobre cómo mejorar la navegación y el enfoque de teclado.
+    3. Sugiere mejoras para el uso adecuado de etiquetas ARIA y otros atributos que ayuden a los usuarios con discapacidades.
+    4. Proporciona consejos para mejorar la experiencia del usuario en dispositivos móviles, como tamaños de objetivo táctil adecuados y mejoras en el diseño adaptable.
+    5. Ofrece recomendaciones generales basadas en las pautas WCAG (Web Content Accessibility Guidelines) para garantizar que el diseño sea accesible para todos los usuarios, incluyendo aquellos con discapacidades visuales, auditivas y motoras.
+    Contenido del diseño:
+
+    ${details}
+    `;
+
+    if (imageBase64) {
+      analysisContent += `Imagen del diseño (base64): ${imageBase64}`;
+    }
 
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
       model: 'gpt-4',
       messages: [
         { 
           role: 'user', 
-          content: `
-          Revisa el siguiente contenido de un diseño de Figma y proporciona un análisis detallado de la accesibilidad. Incluye los siguientes aspectos:
-          1. Identifica problemas de accesibilidad visual como contraste insuficiente, tamaño de fuente pequeño, y colores problemáticos. Ofrece sugerencias específicas para mejorarlos.
-          2. Evalúa la estructura de los componentes y asegúrate de que los elementos interactivos sean fácilmente navegables. Proporciona recomendaciones sobre cómo mejorar la navegación y el enfoque de teclado.
-          3. Sugiere mejoras para el uso adecuado de etiquetas ARIA y otros atributos que ayuden a los usuarios con discapacidades.
-          4. Proporciona consejos para mejorar la experiencia del usuario en dispositivos móviles, como tamaños de objetivo táctil adecuados y mejoras en el diseño adaptable.
-          5. Ofrece recomendaciones generales basadas en las pautas WCAG (Web Content Accessibility Guidelines) para garantizar que el diseño sea accesible para todos los usuarios, incluyendo aquellos con discapacidades visuales, auditivas y motoras.
-          Contenido del diseño:
-
-          ${details}
-
-          Imagen del frame: ${image}
-          
-          Genera un reporte detallado con soluciones y consejos específicos para hacer el diseño más accesible.`
+          content: analysisContent
         }
       ],
       max_tokens: 1000,
