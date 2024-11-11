@@ -12,7 +12,7 @@ app.use(cors({
 }));
 
 // Aumentar el tamaño máximo del payload permitido
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '15mb' }));
 
 // Ruta para generar el reporte de accesibilidad
 app.post('/generate-accessibility-report', async (req, res) => {
@@ -43,7 +43,7 @@ app.post('/generate-accessibility-report', async (req, res) => {
           content: analysisContent
         }
       ],
-      max_tokens: 1000,
+      max_tokens: 2000,
       temperature: 0.7
     }, {
       headers: {
