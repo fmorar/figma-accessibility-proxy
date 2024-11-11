@@ -16,7 +16,7 @@ app.use(express.json());
 // Ruta para generar el reporte de accesibilidad
 app.post('/generate-accessibility-report', async (req, res) => {
   try {
-    const { details } = req.body;
+    const { details, image } = req.body;
 
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
       model: 'gpt-4',
@@ -33,6 +33,8 @@ app.post('/generate-accessibility-report', async (req, res) => {
           Contenido del diseño:
 
           ${details}
+
+          Imagen del frame: ${image}
           
           Genera un reporte detallado con soluciones y consejos específicos para hacer el diseño más accesible.`
         }
