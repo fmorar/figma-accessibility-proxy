@@ -1,7 +1,15 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 const app = express();
+
+// Configurar CORS
+app.use(cors({
+  origin: '*', // Permitir cualquier origen. Puedes ajustar esto a un dominio específico si lo necesitas.
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: 'Content-Type,Authorization'
+}));
 
 app.use(express.json());
 
