@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const fetch = require('node-fetch');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const OPENAI_API_KEY = 'TU_API_KEY_DE_OPENAI';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
 
 app.use(cors());
 app.use(express.json());
