@@ -39,7 +39,7 @@ app.post('/generate-accessibility-report', async (req, res) => {
       Genera un reporte detallado con soluciones y consejos específicos para hacer el diseño más accesible.`
             }
           ],
-          max_tokens: 100,  // Reducir este valor para limitar el uso de tokens
+          max_tokens: 500,  // Reducir este valor para limitar el uso de tokens
           temperature: 0.7
         })
       });
