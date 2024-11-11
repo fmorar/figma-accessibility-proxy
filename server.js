@@ -21,7 +21,7 @@ app.post('/generate-accessibility-report', async (req, res) => {
           'Authorization': `Bearer ${OPENAI_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'gpt-4o',
+          model: 'gpt-4',
           messages: [
             { 
               role: 'user', 
@@ -39,7 +39,7 @@ app.post('/generate-accessibility-report', async (req, res) => {
       Genera un reporte detallado con soluciones y consejos específicos para hacer el diseño más accesible.`
             }
           ],
-          max_tokens: 1000,  // Reducir este valor para limitar el uso de tokens
+          max_tokens: 1000,
           temperature: 0.7
         })
       });
@@ -58,6 +58,50 @@ app.post('/generate-accessibility-report', async (req, res) => {
       console.error('Error durante la solicitud a OpenAI:', error);
       res.status(500).send('Error interno del servidor');
     }
+});
+
+// Endpoint para generar sugerencias de mejora de copy
+app.post('/generate-copy-suggestions', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          { 
+            role: 'user', 
+            content: `
+            Evalúa el siguiente texto y proporciona sugerencias para mejorarlo siguiendo los principios del diseño conversacional. Asegúrate de que el texto sea claro, conciso y fomente una interacción amigable y efectiva:
+            
+            ${text}
+            
+            Ofrece recomendaciones específicas para hacerlo más atractivo y mejorar la experiencia del usuario.`
+          }
+        ],
+        max_tokens: 800,
+        temperature: 0.7
+      })
+    });
+
+    console.log('Respuesta de OpenAI recibida, estado:', response.status);
+    if (!response.ok) {
+      const errorResponse = await response.text();
+      console.error('Error de OpenAI:', errorResponse);
+      return res.status(response.status).send(errorResponse);
+    }
+
+    const data = await response.json();
+    res.send(data.choices[0].message.content.trim());
+  } catch (error) {
+    console.error('Error durante la solicitud a OpenAI:', error);
+    res.status(500).send('Error interno del servidor');
+  }
 });  
 
 app.listen(PORT, () => {
